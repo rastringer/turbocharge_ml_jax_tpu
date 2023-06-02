@@ -12,7 +12,7 @@ book:
     - TPUs.ipynb
     - JAX_foundations.ipynb
     - jax_linear_regression.ipynb
-    - exercise1_jax_mnist_solution.ipynb
+    - exercise1_jax_mnist.ipynb
     - flax_foundations.ipynb
     - exercise2_linear_reg_flax.ipynb
     - Resnet.ipynb
