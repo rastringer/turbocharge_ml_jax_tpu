@@ -1,3 +1,11 @@
-# Summary
+# Resources
 
-In summary, this book has no content whatsoever.
+[JAX docs](https://jax.readthedocs.io/en/latest/)
+
+[Flax docs](https://flax.readthedocs.io/en/latest/guides/flax_basics.html)
+
+[HuggingFace diffusers library](https://github.com/huggingface/diffusers/tree/main/src/diffusers)
+
+[Google Research VIT](https://github.com/google-research/vision_transformer)
+
+[JAX on GKE Example (GPU)](https://cloud.google.com/blog/products/containers-kubernetes/machine-learning-with-jax-on-kubernetes-with-nvidia-gpus)

@@ -121,8 +121,8 @@
   {
     "objectID": "summary.html",
     "href": "summary.html",
-    "title": "13  Summary",
+    "title": "13  Resources",
     "section": "",
-    "text": "In summary, this book has no content whatsoever."
+    "text": "JAX docs\nFlax docs\nHuggingFace diffusers library\nGoogle Research VIT\nJAX on GKE Example (GPU)"
   }
 ]
