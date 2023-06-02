@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Turbocharge ML with JAX and TPUs - 8&nbsp; Stable Diffusion in JAX / Flax !</title>
+<title>Turbocharge ML with JAX and TPUs - 9&nbsp; Stable Diffusion in JAX / Flax !</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./exercise2_solution.html" rel="next">
-<link href="./Resnet.html" rel="prev">
+<link href="./diffusion.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -112,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stable_diffusion.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Stable Diffusion in JAX / Flax !</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stable_diffusion.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Stable Diffusion in JAX / Flax !</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -187,8 +187,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./diffusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Diffusion for the curious</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./stable_diffusion.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Stable Diffusion in JAX / Flax !</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Stable Diffusion in JAX / Flax !</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -200,13 +206,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./exercise2_solution.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Exercise 2 Solution</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercise 2 Solution</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -225,15 +231,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">8.1</span> Setup</a></li>
-  <li><a href="#model-loading" id="toc-model-loading" class="nav-link" data-scroll-target="#model-loading"><span class="header-section-number">8.2</span> Model Loading</a></li>
-  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference"><span class="header-section-number">8.3</span> Inference</a>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">9.1</span> Setup</a></li>
+  <li><a href="#model-loading" id="toc-model-loading" class="nav-link" data-scroll-target="#model-loading"><span class="header-section-number">9.2</span> Model Loading</a></li>
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference"><span class="header-section-number">9.3</span> Inference</a>
   <ul class="collapse">
-  <li><a href="#replication-and-parallelization" id="toc-replication-and-parallelization" class="nav-link" data-scroll-target="#replication-and-parallelization"><span class="header-section-number">8.3.1</span> Replication and parallelization</a></li>
-  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization"><span class="header-section-number">8.3.2</span> Visualization</a></li>
+  <li><a href="#replication-and-parallelization" id="toc-replication-and-parallelization" class="nav-link" data-scroll-target="#replication-and-parallelization"><span class="header-section-number">9.3.1</span> Replication and parallelization</a></li>
+  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization"><span class="header-section-number">9.3.2</span> Visualization</a></li>
   </ul></li>
-  <li><a href="#using-different-prompts" id="toc-using-different-prompts" class="nav-link" data-scroll-target="#using-different-prompts"><span class="header-section-number">8.4</span> Using different prompts</a></li>
-  <li><a href="#how-does-parallelization-work" id="toc-how-does-parallelization-work" class="nav-link" data-scroll-target="#how-does-parallelization-work"><span class="header-section-number">8.5</span> How does parallelization work?</a></li>
+  <li><a href="#using-different-prompts" id="toc-using-different-prompts" class="nav-link" data-scroll-target="#using-different-prompts"><span class="header-section-number">9.4</span> Using different prompts</a></li>
+  <li><a href="#how-does-parallelization-work" id="toc-how-does-parallelization-work" class="nav-link" data-scroll-target="#how-does-parallelization-work"><span class="header-section-number">9.5</span> How does parallelization work?</a></li>
   </ul>
 </nav>
     </div>
@@ -242,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Stable Diffusion in JAX / Flax !</span></h1>
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Stable Diffusion in JAX / Flax !</span></h1>
 </div>
 
 
@@ -263,8 +269,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This notebook shows how to run inference using JAX / Flax. If you want more details about how Stable Diffusion works or want to run it in GPU, please refer to <a href="https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/stable_diffusion.ipynb">this Colab notebook</a>.</p>
 <p>First, make sure you are using a TPU backend. If you are running this notebook in Colab, select <code>Runtime</code> in the menu above, then select the option “Change runtime type” and then select <code>TPU</code> under the <code>Hardware accelerator</code> setting.</p>
 <p>Note that JAX is not exclusive to TPUs, but it shines on that hardware because each TPU server has 8 TPU accelerators working in parallel.</p>
-<section id="setup" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">8.1</span> Setup</h2>
+<section id="setup" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">9.1</span> Setup</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install flax transformers ftfy</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install diffusers<span class="op">==</span><span class="fl">0.9.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -298,8 +304,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> FlaxStableDiffusionPipeline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="model-loading" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="model-loading"><span class="header-section-number">8.2</span> Model Loading</h2>
+<section id="model-loading" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="model-loading"><span class="header-section-number">9.2</span> Model Loading</h2>
 <p>Before using the model, you need to accept the model <a href="https://huggingface.co/spaces/CompVis/stable-diffusion-license">license</a> in order to download and use the weights.</p>
 <p>The license is designed to mitigate the potential harmful effects of such a powerful machine learning system. We request users to <strong>read the license entirely and carefully</strong>. Here we offer a summary:</p>
 <ol type="1">
@@ -432,8 +438,8 @@ You should probably UPCAST the model weights to float32 if this was not intended
 </div>
 </div>
 </section>
-<section id="inference" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="inference"><span class="header-section-number">8.3</span> Inference</h2>
+<section id="inference" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="inference"><span class="header-section-number">9.3</span> Inference</h2>
 <p>Since TPUs usually have 8 devices working in parallel, we’ll replicate our prompt as many times as devices we have. Then we’ll perform inference on the 8 devices at once, each responsible for generating one image. Thus, we’ll get 8 images in the same amount of time it takes for one chip to generate a single one.</p>
 <p>After replicating the prompt, we obtain the tokenized text ids by invoking the <code>prepare_inputs</code> function of the pipeline. The length of the tokenized text is set to 77 tokens, as required by the configuration of the underlying CLIP Text model.</p>
 <div class="cell" data-outputid="ddade814-2b38-4a37-86e2-6fbfd5f1f4a7">
@@ -445,8 +451,8 @@ You should probably UPCAST the model weights to float32 if this was not intended
 <pre><code>(8, 77)</code></pre>
 </div>
 </div>
-<section id="replication-and-parallelization" class="level3" data-number="8.3.1">
-<h3 data-number="8.3.1" class="anchored" data-anchor-id="replication-and-parallelization"><span class="header-section-number">8.3.1</span> Replication and parallelization</h3>
+<section id="replication-and-parallelization" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="replication-and-parallelization"><span class="header-section-number">9.3.1</span> Replication and parallelization</h3>
 <p>Model parameters and inputs have to be replicated across the 8 parallel devices we have. The parameters dictionary is replicated using <code>flax.jax_utils.replicate</code>, which traverses the dictionary and changes the shape of the weights so they are repeated 8 times. Arrays are replicated using <code>shard</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p_params <span class="op">=</span> replicate(params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -488,8 +494,8 @@ Wall time: 1min 29s</code></pre>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> pipeline.numpy_to_pil(images)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="visualization" class="level3" data-number="8.3.2">
-<h3 data-number="8.3.2" class="anchored" data-anchor-id="visualization"><span class="header-section-number">8.3.2</span> Visualization</h3>
+<section id="visualization" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="visualization"><span class="header-section-number">9.3.2</span> Visualization</h3>
 <p>Let’s create a helper function to display images in a grid.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> image_grid(imgs, rows, cols):</span>
@@ -506,8 +512,8 @@ Wall time: 1min 29s</code></pre>
 </div>
 </section>
 </section>
-<section id="using-different-prompts" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="using-different-prompts"><span class="header-section-number">8.4</span> Using different prompts</h2>
+<section id="using-different-prompts" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="using-different-prompts"><span class="header-section-number">9.4</span> Using different prompts</h2>
 <p>We don’t have to replicate the <em>same</em> prompt in all the devices. We can do whatever we want: generate 2 prompts 4 times each, or even generate 8 different prompts at once. Let’s do that!</p>
 <p>First, we’ll refactor the input preparation code into a handy function:</p>
 <div class="cell">
@@ -536,8 +542,8 @@ Wall time: 1min 29s</code></pre>
 </div>
 </div>
 </section>
-<section id="how-does-parallelization-work" class="level2" data-number="8.5">
-<h2 data-number="8.5" class="anchored" data-anchor-id="how-does-parallelization-work"><span class="header-section-number">8.5</span> How does parallelization work?</h2>
+<section id="how-does-parallelization-work" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="how-does-parallelization-work"><span class="header-section-number">9.5</span> How does parallelization work?</h2>
 <p>We said before that the <code>diffusers</code> Flax pipeline automatically compiles the model and runs it in parallel on all available devices. We’ll now briefly look inside that process to show how it works.</p>
 <p>JAX parallelization can be done in multiple ways. The easiest one revolves around using the <code>jax.pmap</code> function to achieve single-program, multiple-data (SPMD) parallelization. It means we’ll run several copies of the same code, each on different data inputs. More sophisticated approaches are possible, we invite you to go over the <a href="https://jax.readthedocs.io/en/latest/index.html">JAX documentation</a> and the <a href="https://jax.readthedocs.io/en/latest/jax-101/08-pjit.html?highlight=pjit"><code>pjit</code> pages</a> to explore this topic if you are interested!</p>
 <p><code>jax.pmap</code> does two things for us: - Compiles (or <code>jit</code>s) the code, as if we had invoked <code>jax.jit()</code>. This does not happen when we call <code>pmap</code>, but the first time the pmapped function is invoked. - Ensures the compiled code runs in parallel in all the available devices.</p>
@@ -812,13 +818,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./Resnet.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Let’s build a ResNet!</span></span>
+      <a href="./diffusion.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Diffusion for the curious</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./exercise2_solution.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Exercise 2 Solution</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercise 2 Solution</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
