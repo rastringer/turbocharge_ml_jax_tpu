@@ -6,7 +6,9 @@ book:
   title: "Turbocharge ML with JAX and TPUs"
   author: "RA Stringer"
   date: "6/2/2023"
+  cover-image: jax_xla.png
   chapters:
+    - index.qmd
     - TPUs.ipynb
     - JAX_foundations.ipynb
     - jax_linear_regression.ipynb
@@ -17,8 +19,6 @@ book:
     - stable_diffusion.ipynb
     - exercise1_jax_mnist_solution.ipynb
     - exercise2_solution.ipynb
-    - index.qmd
-    - intro.qmd
     - summary.qmd
     - references.qmd
 

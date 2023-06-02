@@ -1,5 +1,21 @@
 # Preface {.unnumbered}
 
+JAX and TPUs are powering developers and researchers to speed up machine learning training workloads and have more fun in the process. 
+
+We hope you enjoy the course and start experimenting!
+
+
+
+
+
+
+
+
+
+
+
+
+
 This is a Quarto book.
 
 To learn more about Quarto books visit <https://quarto.org/docs/books>.

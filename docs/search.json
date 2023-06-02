@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Turbocharge ML with JAX and TPUs",
     "section": "",
-    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
+    "text": "Preface\nJAX and TPUs are powering developers and researchers to speed up machine learning training workloads and have more fun in the process.\nWe hope you enjoy the course and start experimenting!\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
   },
   {
     "objectID": "TPUs.html",
@@ -98,24 +98,10 @@
     "text": "import jax\nfrom jax import numpy as jnp, random, lax, jit\nfrom flax import linen as nn\n\nX = jnp.ones((1, 10))\nY = jnp.ones((5,))\n\nmodel = nn.Dense(features=5)\n\n@jit\ndef predict(params):\n  return model.apply({'params': params}, X)\n\n@jit\ndef loss_fn(params):\n  return jnp.mean(jnp.abs(Y - predict(params)))\n\n@jit\ndef init_params(rng):\n  mlp_variables = model.init({'params': rng}, X)\n  return mlp_variables['params']\n\n# Get initial parameters\nparams = init_params(jax.random.PRNGKey(42))\nprint(\"initial params\", params)\n\n# Run SGD.\nfor i in range(50):\n  loss, grad = jax.value_and_grad(loss_fn)(params)\n  print(i, \"loss = \", loss, \"Yhat = \", predict(params))\n  lr = 0.03\n  params = jax.tree_util.tree_map(lambda x, d: x - lr * d, params, grad)"
   },
   {
-    "objectID": "intro.html",
-    "href": "intro.html",
-    "title": "11  Introduction",
-    "section": "",
-    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97."
-  },
-  {
     "objectID": "summary.html",
     "href": "summary.html",
-    "title": "12  Summary",
+    "title": "11  Summary",
     "section": "",
     "text": "In summary, this book has no content whatsoever."
-  },
-  {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97."
   }
 ]
