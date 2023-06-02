@@ -18,6 +18,7 @@ book:
     - Resnet.ipynb
     - diffusion.ipynb
     - stable_diffusion.ipynb
+    - vit_jax.ipynb 
     - exercise1_jax_mnist_solution.ipynb
     - exercise2_solution.ipynb
     - summary.qmd
