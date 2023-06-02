@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>turbocharge_ml - 2&nbsp; Introduction to JAX</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./jax_linear_regression.html" rel="next">
+<link href="./TPUs.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./JAX_foundations.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to JAX</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">turbocharge_ml</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TPUs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">TPUs</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./JAX_foundations.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to JAX</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jax_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression in JAX</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exercise1_jax_mnist_solution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Exercise 1 Solution</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./flax_foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Flax Foundations</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exercise2_linear_reg_flax.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Exercise 2: Linear Regression in Flax</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Resnet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Let’s build a ResNet!</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stable_diffusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">🧨 Stable Diffusion in JAX / Flax !</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exercise1_jax_mnist_solution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Exercise 1 Solution</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exercise2_solution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Exercise 2 Solution</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-learn-jax" id="toc-why-learn-jax" class="nav-link active" data-scroll-target="#why-learn-jax"><span class="header-section-number">2.0.1</span> Why learn JAX?</a></li>
+  <li><a href="#key-concepts" id="toc-key-concepts" class="nav-link" data-scroll-target="#key-concepts"><span class="header-section-number">2.0.2</span> Key concepts</a></li>
+  <li><a href="#accelerated-numpy" id="toc-accelerated-numpy" class="nav-link" data-scroll-target="#accelerated-numpy"><span class="header-section-number">2.0.3</span> Accelerated NumPy</a></li>
+  <li><a href="#a-word-on-colab-tpus" id="toc-a-word-on-colab-tpus" class="nav-link" data-scroll-target="#a-word-on-colab-tpus"><span class="header-section-number">2.0.4</span> A word on Colab TPUs</a></li>
+  <li><a href="#random-numbers" id="toc-random-numbers" class="nav-link" data-scroll-target="#random-numbers"><span class="header-section-number">2.0.5</span> Random numbers</a></li>
+  <li><a href="#intermediate-representations" id="toc-intermediate-representations" class="nav-link" data-scroll-target="#intermediate-representations"><span class="header-section-number">2.0.6</span> Intermediate representations</a></li>
+  <li><a href="#transformations" id="toc-transformations" class="nav-link" data-scroll-target="#transformations"><span class="header-section-number">2.1</span> Transformations</a>
+  <ul class="collapse">
+  <li><a href="#grad" id="toc-grad" class="nav-link" data-scroll-target="#grad"><span class="header-section-number">2.1.1</span> grad</a></li>
+  <li><a href="#value-and-grad" id="toc-value-and-grad" class="nav-link" data-scroll-target="#value-and-grad"><span class="header-section-number">2.1.2</span> Value and grad</a></li>
+  <li><a href="#jit" id="toc-jit" class="nav-link" data-scroll-target="#jit"><span class="header-section-number">2.1.3</span> jit</a></li>
+  <li><a href="#sharp-edges" id="toc-sharp-edges" class="nav-link" data-scroll-target="#sharp-edges"><span class="header-section-number">2.1.4</span> Sharp edges</a></li>
+  <li><a href="#vmap" id="toc-vmap" class="nav-link" data-scroll-target="#vmap"><span class="header-section-number">2.1.5</span> vmap</a></li>
+  <li><a href="#pmap" id="toc-pmap" class="nav-link" data-scroll-target="#pmap"><span class="header-section-number">2.1.6</span> pmap</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to JAX</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><img align="center" src="https://lh4.googleusercontent.com/EMOZuy32KcQiVoOixIdjlScxYzTO_gS9Sq2dtJMX8VpFHbk2RLkB5ZexQ6ebanoOIY8kNML_hJK6RBMo2w0Ox9KYYa8-gaLI_R2KXkSII39OW1nNsV91p62kVe-7Tzege7ic4LBA" alt="JAX_logo" width="400"></p>
+<p><a target="_blank" href="https://colab.research.google.com/github/rastringer/jax_notebooks/blob/master/JAX_foundations.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
+<p>JAX is a framework that enables high-performance numerical computing by merging Autograd and XLA (Accelerated Linear Algebra). Autograd was originally a library created for automatic differentiation of Python and NumPy code, which has since been added to JAX. XLA is an optimizing compiler for machine learning, which can significantly speed up workloads on both TPU and GPU devices.</p>
+<section id="why-learn-jax" class="level3" data-number="2.0.1">
+<h3 data-number="2.0.1" class="anchored" data-anchor-id="why-learn-jax"><span class="header-section-number">2.0.1</span> Why learn JAX?</h3>
+<section id="high-performance" class="level4" data-number="2.0.1.1">
+<h4 data-number="2.0.1.1" class="anchored" data-anchor-id="high-performance"><span class="header-section-number">2.0.1.1</span> High performance</h4>
+<p>JAX has excellent support for accelerators such as GPUs and TPUs and leverages both XLA and Just-In-Time compilation for speedy numerical computation.</p>
+</section>
+<section id="automatic-differentiation" class="level4" data-number="2.0.1.2">
+<h4 data-number="2.0.1.2" class="anchored" data-anchor-id="automatic-differentiation"><span class="header-section-number">2.0.1.2</span> Automatic differentiation</h4>
+<p>JAX’s grad transform function renders trivial the calculation of gradients of complex functions for gradient descent, backpropagation and other optimization algorithms. Research and experimentation: The framework’s flexibility grants low-level programming power to developers for effective and rapid prototyping and research. The ease with which JAX code can be run on any device, functional programming and dynamic computation graphs are ideal for experimentation with different machine learning models.</p>
+</section>
+<section id="composable-and-functional" class="level4" data-number="2.0.1.3">
+<h4 data-number="2.0.1.3" class="anchored" data-anchor-id="composable-and-functional"><span class="header-section-number">2.0.1.3</span> Composable and functional</h4>
+<p>JAX encourages a functional programming style, enabling clean and modular code. Its functions are pure, which means they produce the same output from the same input every time, limiting side effects and improving safety and resusibility. Plays well with others: JAX features interoperability with NumPy, and can be used in conjunction with TensorFlow and PyTorch. Users often combine the features of other libraries with the performance benefits of JAX.</p>
+</section>
+<section id="how-does-jax-compare-to-other-frameworks" class="level4" data-number="2.0.1.4">
+<h4 data-number="2.0.1.4" class="anchored" data-anchor-id="how-does-jax-compare-to-other-frameworks"><span class="header-section-number">2.0.1.4</span> How does JAX compare to other frameworks?</h4>
+</section>
+<section id="tensorflow" class="level4" data-number="2.0.1.5">
+<h4 data-number="2.0.1.5" class="anchored" data-anchor-id="tensorflow"><span class="header-section-number">2.0.1.5</span> TensorFlow</h4>
+<p>TensorFlow creates static computational graphs that define operations and dependencies before execution, enabling efficient optimization and deployment across devices. The tf.Gradient.Tape API supports automatic differentiation, and extensive support for TPUs and GPUs. The framework has a large and mature ecosystem and strong industry adoption. High-level APIs such as Keras and tf.Module make development easier, and TensorFlow Hub offers a repository of pre-trained models.</p>
+</section>
+<section id="pytorch" class="level4" data-number="2.0.1.6">
+<h4 data-number="2.0.1.6" class="anchored" data-anchor-id="pytorch"><span class="header-section-number">2.0.1.6</span> PyTorch</h4>
+<p>Uses “eager” execution, dynamically building computation graphs as operations are invoked. This flexibility can allow for more intuitive experimentation and debugging. The torch.autograd module enables automatic differentiation and computing gradients during the backward pass. The framework has good support for TPUs via the XLA compiler, and torch.cuda for GPU memory management. PyTorch has a growing ecosystem focused on research and flexibility. Many state-of-the-art models are implemented and shared first using the framework. Its high-level API simplifies building neural networks and includes modules for optimizztion, data handling and visualization.</p>
+</section>
+<section id="jax" class="level4" data-number="2.0.1.7">
+<h4 data-number="2.0.1.7" class="anchored" data-anchor-id="jax"><span class="header-section-number">2.0.1.7</span> JAX</h4>
+<p>JAX combines elements of static and dynamic compilation, providing a hybrid approach in which code can be executed “just-in-time”, or traced into static compilation graphs. This enables efficient execution and optimization while retaining flexibility and ease of debugging. The framework offers automatic differentiation through its functional programming model, leveraging function transformations to compute gradients and allow fine-grained control over differentiation.</p>
+<p>JAX enjoys excellent GPU and TPU support, integrating tightly with XLA and requiring zero code changes to switch between devices. Spreading data and computation across cores is made simple via its function transformations such as pmap. JAX has a smaller and rapidly-growing community, with popularity among researchers such as Google’s DeepMind. It’s lower-level API is intuitive to those already familiar with NumPy, and neural network libraries Flax and Haiku provide modules and optimizers for training models.</p>
+</section>
+</section>
+<section id="key-concepts" class="level3" data-number="2.0.2">
+<h3 data-number="2.0.2" class="anchored" data-anchor-id="key-concepts"><span class="header-section-number">2.0.2</span> Key concepts</h3>
+<p>JAX provides an API similar to NumPy that is intuitive and familar to many researchers and engineers. The framework includes composable function transformations for just-in-time compilation, batching, automatic differentiation and parallelization. JAX can be run on TPU, GPU and CPU, without any code changes.</p>
+</section>
+<section id="accelerated-numpy" class="level3" data-number="2.0.3">
+<h3 data-number="2.0.3" class="anchored" data-anchor-id="accelerated-numpy"><span class="header-section-number">2.0.3</span> Accelerated NumPy</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> random</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> device_put</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> grad, vmap, pmap, jit, make_jaxpr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:7074,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685521002262,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="8d4e5fb1-164c-44ee-a7a8-8b4a42e2ca09">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> jnp.arange(<span class="dv">10</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[0 1 2 3 4 5 6 7 8 9]</code></pre>
+</div>
+</div>
+<p>We can move this array from CPU to GPU or TPU.</p>
+</section>
+<section id="a-word-on-colab-tpus" class="level3" data-number="2.0.4">
+<h3 data-number="2.0.4" class="anchored" data-anchor-id="a-word-on-colab-tpus"><span class="header-section-number">2.0.4</span> A word on Colab TPUs</h3>
+<p>It used to be easy to switch from GPU to TPU in Colabs, however the TPUs set up is now behind JAX version &gt;=0.4, which requires TPU VMs (on GCP).</p>
+<p>JAX 0.4 and newer requires TPU VMs, which Colab does not provide at this time. You can still use jax 0.3.25 on Colab TPU, which is the version that comes installed by default on Colab TPU runtimes. If you’ve already updated JAX, you can choose Runtime-&gt;Disconnect and Delete Runtime to get a fresh TPU VM, and then skip the pip install step so that you keep the default jax/jaxlib version 0.3.25.</p>
+<p>For now, we will proceed with GPUs and run code on Cloud TPU VMs later in the course.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:221,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685521738470,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="88c8e657-b342-485e-f2f8-e3ef9db137cf">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(jax.device_count())</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>device_type <span class="op">=</span> jax.devices()[<span class="dv">0</span>].device_kind</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>device_type</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>'Tesla T4'</code></pre>
+</div>
+</div>
+<p>More on how JAX creates random numbers later. For now, let’s initialize a pseudo random number generator (PRNG) key.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> random</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>key <span class="op">=</span> random.PRNGKey(<span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:2,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685521963691,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="d0304d89-571f-46e0-c8ab-44193f059cdb">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>key, subkey <span class="op">=</span> random.split(key)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> random.normal(key, (<span class="dv">1000</span>, <span class="dv">1000</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"x is of shape: </span><span class="sc">{</span>x<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"x has dtype: </span><span class="sc">{</span>x<span class="sc">.</span>dtype<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>x is of shape: (1000, 1000)
+x has dtype: float32</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:4,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522130814,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="c199f43f-f60b-4f30-d00f-c213436669a0">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array(x)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> x_on_cpu(x):</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> np.dot(x, x)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit <span class="op">-</span>n <span class="dv">1</span> <span class="op">-</span>r <span class="dv">1</span> x_on_cpu(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>29.3 ms ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:3,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522270619,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="60c58686-8ba1-4d5d-812d-959d5a811f56">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> x_on_gpu(x):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> jnp.dot(x, x)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit <span class="op">-</span>n <span class="dv">5</span> <span class="op">-</span>r <span class="dv">5</span> x_on_gpu(x).block_until_ready()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3.03 ms ± 723 µs per loop (mean ± std. dev. of 5 runs, 5 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:2,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685014043401,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="45ef5d29-5c64-4faf-ead5-622a9a035ec9">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> numpy_random_state():</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="bu">str</span>(np.random.get_state())[:<span class="dv">100</span>], <span class="st">'...'</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>numpy_random_state()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>('MT19937', array([1483202178, 2954356075, 3069814800,  774374480, 1305506623,
+        453414418, 21 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="random-numbers" class="level3" data-number="2.0.5">
+<h3 data-number="2.0.5" class="anchored" data-anchor-id="random-numbers"><span class="header-section-number">2.0.5</span> Random numbers</h3>
+<p>Generating random numbers can seem complicated at first glance.</p>
+<p>Pseudo random number generation (PRNG) creates sequences that aren’t truly random because they’re determined by their initial value, the <code>seed</code>. Each random sampling is a deterministic functino of a <code>state</code> carried between examples.</p>
+<p>In NumPy, PRNG is based on a global state, using the <code>numpy.random</code> module.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:3,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522391673,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="2ae720ee-4fc0-4ed7-9999-697c3a4fd746">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> numpy_random_state():</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="bu">str</span>(np.random.get_state())[:<span class="dv">100</span>], <span class="st">'...'</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>numpy_random_state()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>('MT19937', array([         0,          1, 1812433255, 1900727105, 1208447044,
+       2481403966, 40 ...</code></pre>
+</div>
+</div>
+<p>This state is then updated by each call to <code>random</code>.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:213,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522393929,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="e3436eff-036f-4d5b-dd72-5994c1898726">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>numpy_random_state()</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> np.random.uniform()</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>numpy_random_state()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>('MT19937', array([         0,          1, 1812433255, 1900727105, 1208447044,
+       2481403966, 40 ...
+('MT19937', array([2443250962, 1093594115, 1878467924, 2709361018, 1101979660,
+       3904844661,  6 ...</code></pre>
+</div>
+</div>
+<p>JAX handles PRNG differently since the framework intends to be easy to reproduce, parallelize and vectorize.</p>
+<p>Rather than use a global state, JAX uses a state called a <code>key</code>.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:218,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522400857,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="09beb5a6-711a-4995-c740-bf363e87e75f">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>key <span class="op">=</span> random.PRNGKey(<span class="dv">10</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(key)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[ 0 10]</code></pre>
+</div>
+</div>
+<p>Random functions consume, and don’t alter, the key. This means the same key should always produce the same sample.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:343,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522403497,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="cb70006c-bff8-424c-acc1-3fbebb33e07a">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">3</span>):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(random.normal(key))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-1.3445405
+-1.3445405
+-1.3445405</code></pre>
+</div>
+</div>
+<p>One practice to bear in mind, then, is never to resuse keys, unless identical outputs are necessary. We can achieve independent keys by using the <code>split()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>key, subkey <span class="op">=</span> random.split(key)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="intermediate-representations" class="level3" data-number="2.0.6">
+<h3 data-number="2.0.6" class="anchored" data-anchor-id="intermediate-representations"><span class="header-section-number">2.0.6</span> Intermediate representations</h3>
+<p>Introducing the Jaxpr</p>
+<p>An <em>intermediate representation</em> is an internal interpretation of machine learning code used by underlying frameworks or compilers to optimize the program. When we write code in a framework such as JAX or PyTorch, it is converted from high-level code into a computational graph, or symbolic representation. This is further transformed into an intermediate representation (IR) optimized for efficiency. The IR is then optimized over several passes to conduct operations such as constant folding, operation fusion, model parallelization, and quantization. This is followed by hardware-specific compilation, to convert the IR into low-level code optimized for the required backend (TPU, GPU etc).</p>
+<p>The jaxpr</p>
+<p>JAX converts functions into an intermediate representation called a jaxpr . Transformations such as grad then work this the jaxpr representation. JAX works by tracing functions. Before we look at what that means, consider this simple Python function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_squares(x):</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jnp.<span class="bu">sum</span>(x<span class="op">**</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>What does this function do? It looks easy at first glance, since it adds the result of x**2. x could be a single variable, or an array. However, given Python’s dynamism, it could do anything depending on what <code>x</code> is…square an ice-cream order, print job or jackpot winnings in a slot machine.</p>
+<p>JAX takes advantage of this dynamism by running functions using tracer values. These are experimental inputs to a function, which help JAX understand how it works and what it will accomplish.</p>
+<p>We can take a look at the IR, the jaxpr, by using the <code>jax.make_jaxpr</code> method.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:2,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685522702457,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="cfd9c3c4-472a-4228-b80c-33f5afa30157">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> make_jaxpr</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(make_jaxpr(sum_squares)(<span class="fl">3.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{ lambda ; a:f32[]. let
+    b:f32[] = integer_pow[y=2] a
+    c:f32[] = convert_element_type[new_dtype=float32 weak_type=False] b
+    d:f32[] = reduce_sum[axes=()] c
+  in (d,) }</code></pre>
+</div>
+</div>
+<p>This result comprises the primitive operations, called lax, that JAX knows how to transform.</p>
+<p>Herein lies JAX’s power; with no need to make the API complicated, JAX develops a sound idea of what the function is doing, and knows how to vectorize with <code>vmap</code>, parallelize with <code>pmap</code> , and how to just-in-time compile with <code>jit</code> .</p>
+</section>
+<section id="transformations" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="transformations"><span class="header-section-number">2.1</span> Transformations</h2>
+<p>Modular, functional programming</p>
+<p>JAX can transform functions. This means a numerical function can be returned as a new function that, for example, computes the gradient of, or parallelizes the original function. It could also do both!</p>
+<section id="grad" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="grad"><span class="header-section-number">2.1.1</span> grad</h3>
+<p>One of the most commonly used transformations, <code>jax.grad</code> calculates the gradient of a function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> grad</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_squares(x):</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jnp.<span class="bu">sum</span>(x<span class="op">**</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Since <code>jax.grad(f)</code> computes the gradient of function <code>f</code>, <code>jax.grad(f)(x)</code> is the gradient of f at x .</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:331,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524011409,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="ceedc662-529a-43c1-b15a-96da6b1fc672">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(sum_squares)(<span class="fl">3.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>6.0</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:3,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524112620,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="30f740be-d8a8-4809-e13a-34cf4785f27f">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(grad(sum_squares))(<span class="fl">3.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2.0</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:238,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685523746907,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="92927e7c-fdd4-40b4-a312-7936bbe9b032">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cylinder_volume(r, h):</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    vol <span class="op">=</span> jnp.pi <span class="op">*</span> r<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> h</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vol</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the volume of a cylinder with radius 3, and height 3</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cylinder_volume(<span class="dv">3</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>84.82300164692441</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:338,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524027040,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="cb3cfd42-9a6b-48f6-f79c-8ecfa15c7673">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(cylinder_volume)(<span class="fl">4.0</span>, <span class="fl">8.0</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(cylinder_volume)(<span class="fl">2.0</span>, <span class="fl">6.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>201.06194
+75.398224</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:334,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524084687,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="74c61d15-9cf5-4a70-fe87-9d6e414a5c7e">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(grad(cylinder_volume))(<span class="fl">4.0</span>, <span class="fl">8.0</span>))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(grad(cylinder_volume))(<span class="fl">2.0</span>, <span class="fl">6.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>50.265484
+37.699112</code></pre>
+</div>
+</div>
+<p>We can use argnums to calculate the gradient with respect to different arguments:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(x):</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> x <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">**</span> <span class="dv">3</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">3</span> <span class="op">*</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:222,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524173513,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="61eb2e8a-f68a-4fb4-b756-a94332602b0d">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>key <span class="op">=</span> random.PRNGKey(<span class="dv">0</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> random.normal(key, ())</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(key)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(x)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(f)(x))</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(f)(<span class="op">-</span>x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[0 0]
+-0.20584226
+3.0
+0.2542262</code></pre>
+</div>
+</div>
+<p>An obvious example to make use of <code>grad</code> would be a loss function.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:228,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685526604314,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="6f0814f5-0000-4007-a51d-ef5f0f60d07e">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loss(preds, targets):</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> jnp.<span class="bu">sum</span>((preds<span class="op">-</span>targets)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> jnp.asarray([<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">4.0</span>])</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>targets <span class="op">=</span> jnp.asarray([<span class="fl">1.1</span>, <span class="fl">2.1</span>, <span class="fl">3.1</span>, <span class="fl">4.1</span>])</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(grad(loss)(x, y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[-4. -2.  0.  2.]</code></pre>
+</div>
+</div>
+</section>
+<section id="value-and-grad" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="value-and-grad"><span class="header-section-number">2.1.2</span> Value and grad</h3>
+<p>We can return both the value and gradient of a function using <code>value_and_grad</code>. This is a common pattern in machine learning for logging training loss.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:292,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685526606080,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="035752ea-8a77-411a-f182-7199d89810b2">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> value_and_grad</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>value_and_grad(loss)(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="74">
+<pre><code>(Array(6., dtype=float32), Array([-4., -2.,  0.,  2.], dtype=float32))</code></pre>
+</div>
+</div>
+</section>
+<section id="jit" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="jit"><span class="header-section-number">2.1.3</span> jit</h3>
+<p>The <code>jax.jit()</code> transformation performs Just In Time (JIT) compilation of a JAX Python function for efficient execution in XLA.</p>
+<p>Let’s go back to our <code>sum_squares()</code> function and time its original implementation on an array of numbers 1-100.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:3611,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524200200,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="d3646411-cd42-49e7-f399-7a55727d4462">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> jit</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_squares(x):</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jnp.<span class="bu">sum</span>(x<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> jnp.arange(<span class="dv">100</span>)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit sum_squares(x).block_until_ready()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>419 µs ± 41.1 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)</code></pre>
+</div>
+</div>
+<p>Let’s jit the function and notice the speed improvement.</p>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:6107,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524210492,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="f3612da7-eb51-4d9b-db8e-e125c34f3589">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>sum_squares_jit <span class="op">=</span> jit(sum_squares)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Warm up</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>sum_squares_jit(x).block_until_ready()</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit sum_squares_jit(x).block_until_ready()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>72.6 µs ± 20.4 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)</code></pre>
+</div>
+</div>
+<p>In case this notation isn’t familiar, µs denotes a ‘microsecond’, or a millionth of a second. ns is a ‘nanosecond’, a billionth of a second. Our jitted function is considerably faster in this simple example. Note: JAX’s asynchronous execution model means the Python call might return before the computation ends. This is why we use the block_until_ready() method to make sure we return the end result. a returned array would not be populated as soon as the function returns. Using block_until_ready means we time the actual computation, not just the dispatch.</p>
+</section>
+<section id="sharp-edges" class="level3" data-number="2.1.4">
+<h3 data-number="2.1.4" class="anchored" data-anchor-id="sharp-edges"><span class="header-section-number">2.1.4</span> Sharp edges</h3>
+<p>It isn’t possible or economical to jit everything. jit will throw errors when function inputs spark conditional chains (eg if x &lt; 5: … ) and jit itself creates some overhead. jit is best reserved for compiling complex functions that will run several times, such as updating weights in a training loop.</p>
+</section>
+<section id="vmap" class="level3" data-number="2.1.5">
+<h3 data-number="2.1.5" class="anchored" data-anchor-id="vmap"><span class="header-section-number">2.1.5</span> vmap</h3>
+<p>The <code>jax.vmap</code> transformation generates a vectorized implementation of a function.</p>
+<p><a href="https://jax.readthedocs.io/en/latest/notebooks/quickstart.html#">Reference</a> for this section (thanks to DeepMind).</p>
+<p>We can loop over a batch in Python however such operations tend to be costly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> vmap</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> random.normal(key, (<span class="dv">150</span>, <span class="dv">100</span>))</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>batched_x <span class="op">=</span> random.normal(key, (<span class="dv">10</span>, <span class="dv">100</span>))</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_matrix(v):</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> jnp.dot(mat, v)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:3259,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524246092,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="7a21be68-262d-429f-dab4-4f67d02a9851">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> naively_batched_apply_matrix(v_batched):</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> jnp.stack([apply_matrix(v) <span class="cf">for</span> v <span class="kw">in</span> v_batched])</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Naively batched'</span>)</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit naively_batched_apply_matrix(batched_x).block_until_ready()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Naively batched
+3.62 ms ± 298 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:9847,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524256955,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="dc964f30-c0ec-41ba-c05a-64e1ae4da7e1">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vmap_batched_apply_matrix(v_batched):</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> vmap(apply_matrix)(v_batched)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Auto-vectorized with vmap'</span>)</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit vmap_batched_apply_matrix(batched_x).block_until_ready()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Auto-vectorized with vmap
+1.17 ms ± 21.4 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:7204,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1685524272495,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="7c22f54e-786c-4155-ad83-4f3eaa140063">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="at">@jit</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> jit_vmap_batched_apply_matrix(v_batched):</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> vmap(apply_matrix)(v_batched)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'jitted and auto-vectorized with vmap'</span>)</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit jit_vmap_batched_apply_matrix(batched_x).block_until_ready()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>jitted and auto-vectorized with vmap
+86.9 µs ± 10 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)</code></pre>
+</div>
+</div>
+<p>Putting it all together</p>
+<p>We take a loss function, use it to find gradients with grad, vectorize it for work across batches, then jit compile, all in one line.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> grad, vmap, jit</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(params, inputs):</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> W, b <span class="kw">in</span> params:</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> jnp.dot(inputs, W) <span class="op">+</span> b</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>        inputs <span class="op">=</span> jnp.tahn(outputs)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> outputs</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mse_loss(params, batch):</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>    inputs, targets <span class="op">=</span> batch</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>    preds <span class="op">=</span> predict(params, inputs)</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> jnp.<span class="bu">sum</span>((preds <span class="op">-</span> targets) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(loss)</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> loss</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>gradients <span class="op">=</span> jit(grad(mse_loss))</span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>vectorized_gradients <span class="op">=</span> jit(vmap(grad(mse_loss), in_axes<span class="op">=</span>(<span class="va">None</span>, <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pmap" class="level3" data-number="2.1.6">
+<h3 data-number="2.1.6" class="anchored" data-anchor-id="pmap"><span class="header-section-number">2.1.6</span> pmap</h3>
+<p><code>pmap</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pmap_batched_apply_matrix(v_batched):</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> pmap(apply_matrix)(v_batched)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-executioninfo="{&quot;elapsed&quot;:343,&quot;status&quot;:&quot;error&quot;,&quot;timestamp&quot;:1685524287000,&quot;user&quot;:{&quot;displayName&quot;:&quot;Robin Stringer&quot;,&quot;userId&quot;:&quot;05796722230835218202&quot;},&quot;user_tz&quot;:-60}" data-outputid="67e65081-05ee-46aa-d613-b877b008c4bf">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>pmap_batched_apply_matrix(batched_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>NameError: ignored</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./TPUs.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">TPUs</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./jax_linear_regression.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression in JAX</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,34 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Turbocharge ML with JAX and TPUs"
+  author: "RA Stringer"
+  date: "6/2/2023"
+  chapters:
+    - TPUs.ipynb
+    - JAX_foundations.ipynb
+    - jax_linear_regression.ipynb
+    - exercise1_jax_mnist_solution.ipynb
+    - flax_foundations.ipynb
+    - exercise2_linear_reg_flax.ipynb
+    - Resnet.ipynb
+    - stable_diffusion.ipynb
+    - exercise1_jax_mnist_solution.ipynb
+    - exercise2_solution.ipynb
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+
+
