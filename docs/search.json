@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Turbocharge ML with JAX and TPUs",
     "section": "",
-    "text": "Preface\nJAX and TPUs are powering developers and researchers to speed up machine learning training workloads and have more fun in the process.\nWe hope you enjoy the course and start experimenting!\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
+    "text": "Welcome\nJAX and TPUs are powering developers and researchers to speed up machine learning training workloads and have more fun in the process.\nYou’ll learn JAX’s elegant, functional style and transformations to super charge code that will look familiar to anyone who has worked with Python and NumPy.  We will build upon taking derivatives and just-in-time compilation to linear regression and basic image recognition models.\nIn later stages of the course, we will run cutting edge models including Stable Diffusion from Hugging Face, and Google Research’s Vision Transformer.\nWe hope you enjoy the course and start experimenting!"
   },
   {
     "objectID": "TPUs.html",

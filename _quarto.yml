@@ -8,7 +8,6 @@ book:
   title: "Turbocharge ML with JAX and TPUs"
   author: "RA Stringer"
   date: "6/2/2023"
-  cover-image: jax_xla.png
   repo-url: https://github.com/rastringer/turbocharge_ml_jax_tpu
   chapters:
     - index.qmd
