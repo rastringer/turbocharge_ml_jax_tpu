@@ -2,7 +2,7 @@
 
 JAX and TPUs are powering developers and researchers to speed up machine learning training workloads and have more fun in the process. 
 
-You'll learn JAX's elegant, functional style and transformations to super charge code that will look familiar to anyone who has worked with Python and NumPy. <img style="float: right;" src="images/updated_cover.png" width="300" height="300"> We will build upon taking derivatives and just-in-time compilation to linear regression and basic image recognition models. 
+You'll learn JAX's elegant, functional style and transformations to super charge code that will look familiar to anyone who has worked with Python and NumPy. <img style="float: right;" src="images/updated_cover.png" width="425" height="425"> We will build upon taking derivatives and just-in-time compilation to linear regression and basic image recognition models. 
 
 In later stages of the course, we will run cutting edge models including Stable Diffusion from Hugging Face, and Google Research's Vision Transformer.
 
